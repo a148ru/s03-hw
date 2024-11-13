@@ -103,11 +103,22 @@ variable "each_vm" {
 }
 
 variable "vm_disk" {
-  type = map(string)
+  type = map(any)
   default = {
     "name_pref" = "disk",
     "type" = "network-hdd",
-    "size" = "1G",
-    "block_size" = "4"
+    "size" = 1,
+    "block_size" = 4096
+  }
+}
+
+variable "storage_vm" {
+  type = map(any)
+  default = {
+    vm_name = "storage"
+    cpu = 2
+    ram = 2 
+    c_fract = 20
+
   }
 }

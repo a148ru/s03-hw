@@ -81,3 +81,32 @@ resource "yandex_compute_instance" "db" {
 ```
 
 ![alt text](image-3.png)
+
+
+#### Задание 3
+
+##### 3.1
+
+```rb
+resource "yandex_compute_disk" "empty-disk" {
+    count = 3
+    name       = "${var.vm_disk.name_pref}-${count.index}"
+    type       = var.vm_disk.type
+    zone       = var.default_zone
+    size       = var.vm_disk.size
+    block_size = var.vm_disk.block_size
+}
+```
+
+```rb
+...
+variable "vm_disk" {
+  type = map(any)
+  default = {
+    "name_pref" = "disk",
+    "type" = "network-hdd",
+    "size" = 1,
+    "block_size" = 4096
+  }
+}
+```
