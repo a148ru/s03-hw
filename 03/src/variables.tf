@@ -101,3 +101,13 @@ variable "each_vm" {
       c_fract = 20
     } ]
 }
+
+variable "vm_disk" {
+  type = map(string)
+  default = {
+    "name_pref" = "disk",
+    "type" = "network-hdd",
+    "size" = "1G",
+    "block_size" = "4"
+  }
+}
