@@ -85,7 +85,7 @@ resource "yandex_compute_instance" "db" {
 
 #### Задание 3
 
-##### 3.1
+##### 3.1-2
 
 ```rb
 resource "yandex_compute_disk" "empty-disk" {
@@ -109,4 +109,55 @@ variable "vm_disk" {
     "block_size" = 4096
   }
 }
+```
+
+#### Задание 4
+
+
+
+```rb
+locals {
+  inventory = {
+        webservers = yandex_compute_instance.web
+        databases = yandex_compute_instance.db
+        storage = yandex_compute_instance.storage
+    }
+}
+resource "local_file" "ansible_inventory" {
+    depends_on = [ yandex_compute_instance.storage, yandex_compute_instance.db, yandex_compute_instance.web ]
+    filename = "./inventory.ini"
+    content = templatefile("./ansible.tftpl", local.inventory) 
+}
+```
+
+```
+
+[webservers]
+
+
+%{~ for i in  webservers ~}
+
+${i["name"]}   ansible_host=${i["network_interface"][0]["nat_ip_address"]} fqdn=${i["fqdn"]}
+
+%{~ endfor ~}
+
+
+
+
+
+
+[databases]
+
+%{~ for i in  databases ~}
+
+${i["name"]}   ansible_host=${i["network_interface"][0]["nat_ip_address"]} fqdn=${i["fqdn"]}
+
+%{~ endfor ~}
+
+
+
+[storage]
+
+
+${storage["name"]}   ansible_host=${storage["network_interface"][0]["nat_ip_address"]} fqdn=${storage["fqdn"]}
 ```
