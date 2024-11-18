@@ -3,7 +3,7 @@ locals {
   inventory = {
         webservers = yandex_compute_instance.web
         databases = yandex_compute_instance.db
-        storage = yandex_compute_instance.storage
+        storage = [ yandex_compute_instance.storage ]
     }
 }
 resource "local_file" "ansible_inventory" {

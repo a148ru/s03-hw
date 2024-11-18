@@ -111,16 +111,39 @@ variable "vm_disk" {
 }
 ```
 
+исправил ```disk_vm.tf```
+```rb
+ dynamic secondary_disk {
+    for_each = yandex_compute_disk.empty-disk
+    content {
+        disk_id = secondary_disk.value.id 
+    }
+  }
+```
+
+
 #### Задание 4
 
 
+переделал - storage ```tuple(object())``` - в шаблоне цикл
+```sh
+$ terraform console
+> type(local.inventory.storage)
+tuple([
+    object({
+        allow_recreate: bool,
+        allow_stopping_for_update: bool,
+        boot_disk: list(
+          ...
+
+```
 
 ```rb
 locals {
   inventory = {
         webservers = yandex_compute_instance.web
         databases = yandex_compute_instance.db
-        storage = yandex_compute_instance.storage
+        storage = [ yandex_compute_instance.storage ]
     }
 }
 resource "local_file" "ansible_inventory" {
@@ -155,9 +178,13 @@ ${i["name"]}   ansible_host=${i["network_interface"][0]["nat_ip_address"]} fqdn=
 %{~ endfor ~}
 
 
-
 [storage]
 
 
-${storage["name"]}   ansible_host=${storage["network_interface"][0]["nat_ip_address"]} fqdn=${storage["fqdn"]}
+%{~ for i in  storage ~}
+
+${i["name"]}   ansible_host=${i["network_interface"][0]["nat_ip_address"]} fqdn=${i["fqdn"]}
+
+%{~ endfor ~}
+
 ```

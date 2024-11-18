@@ -41,11 +41,7 @@ resource "yandex_compute_instance" "storage" {
   }
 
   dynamic secondary_disk {
-    for_each = {
-        0 = yandex_compute_disk.empty-disk[0],
-        1 = yandex_compute_disk.empty-disk[1],
-        2 = yandex_compute_disk.empty-disk[2]
-    }
+    for_each = yandex_compute_disk.empty-disk
     content {
         disk_id = secondary_disk.value.id 
     }
